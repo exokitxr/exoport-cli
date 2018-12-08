@@ -15,6 +15,7 @@ const args = minimist(process.argv.slice(2), {
     'appName',
     'packageName',
     'buildType',
+    'contentUrl',
     'contentDir',
     'output',
     'model',
@@ -27,6 +28,7 @@ const args = minimist(process.argv.slice(2), {
     p: 'packageName',
     t: 'buildType',
     f: 'contentDir',
+    u: 'contentUrl',
     o: 'output',
     m: 'model',
     r: 'portal',
@@ -41,6 +43,7 @@ let {
   buildType,
   model: modelPath,
   portal: portalPath,
+  contentUrl: contentUrlPath,
   contentDir: contentDirPath,
   output: outputPath,
   cert: certPath,
@@ -99,8 +102,11 @@ if (!['production', 'debug'].includes(buildType)) {
   console.warn('invalid buildType');
   valid = false;
 }
-if (!contentDirPath) {
-  console.warn('invalid contentDirPath');
+if (!contentUrlPath && !contentDirPath) {
+  console.warn('invalid contentUrlPath or contentDirPath');
+  valid = false;
+} else if (contentUrlPath && contentDirPath) {
+  console.warn('cannot use both contentUrlPath and contentDirPath');
   valid = false;
 }
 if (!outputPath) {
@@ -119,10 +125,14 @@ if (valid) {
     form.append('packagename', packageName);
     form.append('buildtype', buildType);
 
-    const contentDirBuffer = await _readDirectory(contentDirPath);
-    form.append('app.zip', contentDirBuffer, {
-      filename: 'app.zip',
-    });
+    if (contentUrlPath) {
+      form.append('app.url', contentDirBuffer, contentUrlPath);
+    } else if (contentDirPath) {
+      const contentDirBuffer = await _readDirectory(contentDirPath);
+      form.append('app.zip', contentDirBuffer, {
+        filename: 'app.zip',
+      });
+    }
 
     if (modelPath) {
       const modelBuffer = await _readFile(modelPath);
@@ -181,5 +191,5 @@ if (valid) {
       console.warn(err.stack);
     });
 } else {
-  console.warn('usage: exoport [-a appName] [-p packageName] [-f contentDir] [-o output] [-m model] [-r portal] [-c cert] [-k privkey]');
+  console.warn('usage: exoport [-a appName] [-p packageName] <-u contentUrl|-f contentDir> [-o output] [-m model] [-r portal] [-c cert] [-k privkey]');
 }
