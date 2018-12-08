@@ -178,5 +178,5 @@ if (valid) {
       console.warn(err.stack);
     });
 } else {
-  console.warn('invalid arugments');
+  console.warn('invalid arguments');
 }
