@@ -1,0 +1,24 @@
+{
+  "name": "exoport-cli",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/modulesio/exoport-cli.git"
+  },
+  "author": "Avaer Kazmer <a@modules.io>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/modulesio/exoport-cli/issues"
+  },
+  "homepage": "https://github.com/modulesio/exoport-cli#readme",
+  "dependencies": {
+    "archiver": "^3.0.0",
+    "form-data": "^2.3.3",
+    "minimist": "^1.2.0"
+  }
+}
