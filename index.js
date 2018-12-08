@@ -91,7 +91,7 @@ if (!appName) {
   valid = false;
 }
 if (!packageName) {
-  console.warn('missing appName');
+  console.warn('missing packageName');
   valid = false;
 }
 if (!['production', 'debug'].includes(buildType)) {
