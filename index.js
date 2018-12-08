@@ -15,10 +15,10 @@ const args = minimist(process.argv.slice(2), {
     'appName',
     'packageName',
     'buildType',
-    'model',
-    'portal',
     'contentDir',
     'output',
+    'model',
+    'portal',
     'cert',
     'privkey',
   ],
@@ -26,10 +26,10 @@ const args = minimist(process.argv.slice(2), {
     a: 'appName',
     p: 'packageName',
     t: 'buildType',
-    m: 'model',
-    r: 'portal',
     f: 'contentDir',
     o: 'output',
+    m: 'model',
+    r: 'portal',
     c: 'cert',
     k: 'privkey',
   },
@@ -181,5 +181,5 @@ if (valid) {
       console.warn(err.stack);
     });
 } else {
-  console.warn('usage: exoport [-a appName] [-p packageName] [-m model] [-r portal] [-f contentDir] [-o output] [-c cert] [-k privkey]');
+  console.warn('usage: exoport [-a appName] [-p packageName] [-f contentDir] [-o output] [-m model] [-r portal] [-c cert] [-k privkey]');
 }
