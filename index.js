@@ -180,5 +180,5 @@ if (valid) {
       console.warn(err.stack);
     });
 } else {
-  console.warn('invalid arguments');
+  console.warn('usage: exoport [-a appName] [-p packageName] [-m model] [-r portal] [-f contentDir] [-o output] [-c cert] [-k privkey]');
 }
