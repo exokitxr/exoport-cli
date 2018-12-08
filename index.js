@@ -25,6 +25,7 @@ const args = minimist(process.argv.slice(2), {
   alias: {
     a: 'appName',
     p: 'packageName',
+    t: 'buildType',
     m: 'model',
     r: 'portal',
     f: 'contentDir',
