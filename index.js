@@ -17,7 +17,7 @@ const args = minimist(process.argv.slice(2), {
     'buildType',
     'model',
     'portal',
-    'content',
+    'contentDir',
     'output',
     'cert',
     'privkey',
@@ -27,7 +27,7 @@ const args = minimist(process.argv.slice(2), {
     p: 'packageName',
     m: 'model',
     r: 'portal',
-    f: 'content',
+    f: 'contentDir',
     o: 'output',
     c: 'cert',
     k: 'privkey',
@@ -40,7 +40,7 @@ let {
   buildType,
   model: modelPath,
   portal: portalPath,
-  content: contentPath,
+  contentDir: contentDirPath,
   output: outputPath,
   cert: certPath,
   privkey: privkeyPath,
@@ -98,8 +98,8 @@ if (!['production', 'debug'].includes(buildType)) {
   console.warn('invalid buildType');
   valid = false;
 }
-if (!contentPath) {
-  console.warn('invalid contentPath');
+if (!contentDirPath) {
+  console.warn('invalid contentDirPath');
   valid = false;
 }
 if (!outputPath) {
@@ -118,8 +118,8 @@ if (valid) {
     form.append('packagename', packageName);
     form.append('buildtype', buildType);
 
-    const contentBuffer = await _readDirectory(contentPath);
-    form.append('app.zip', contentBuffer, {
+    const contentDirBuffer = await _readDirectory(contentDirPath);
+    form.append('app.zip', contentDirBuffer, {
       filename: 'app.zip',
     });
 
