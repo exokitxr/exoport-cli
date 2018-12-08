@@ -109,35 +109,17 @@ if (!privkeyPath) {
   valid = false;
 }
 if (valid) {
-  console.log('got args', {
-    appName,
-    packageName,
-    buildType,
-    contentPath,
-    outputPath,
-    modelPath,
-    portalPath,
-    certPath,
-    privkeyPath,
-  });
-
   (async () => {
-    console.log('form 1');
     const form = new FormData();
 
     form.append('appname', appName);
     form.append('packagename', packageName);
     form.append('buildtype', buildType);
 
-    console.log('form 2');
-
     const contentBuffer = await _readDirectory(contentPath);
-    console.log('got content buffer', contentBuffer.constructor.name, contentBuffer.byteLength);
     form.append('app.zip', contentBuffer, {
       filename: 'app.zip',
     });
-
-    console.log('form 3');
 
     if (modelPath) {
       const modelBuffer = await _readFile(modelPath);
@@ -152,20 +134,15 @@ if (valid) {
       });
     }
 
-    console.log('form 4');
-
     const certBuffer = await _readFile(certPath);
     form.append('app.cert', certBuffer);
 
     const privkeyBuffer = await _readFile(privkeyPath);
     form.append('app.privkey', privkeyBuffer);
 
-    console.log('form 5');
-
     const u = await new Promise((accept, reject) => {
       form.submit(EXOPORT_URL, (err, res) => {
         if (!err) {
-          console.log(res.headers);
           const bs = [];
           res.on('data', d => {
             bs.push(d);
@@ -196,8 +173,6 @@ if (valid) {
       req.on('error', reject);
       req.end();
     });
-
-    console.log('form 6', u);
   })()
     .catch(err => {
       console.warn(err.stack);
