@@ -7,11 +7,12 @@ const minimist = require('minimist');
 const FormData = require('form-data');
 const archiver = require('archiver');
 
-const EXOPORT_HOSTNAME = `https://build.webmr.io`;
+const EXOPORT_HOSTNAME = `https://exoport.webmr.io`;
 const EXOPORT_URL = `${EXOPORT_HOSTNAME}/mpk`;
 
 const args = minimist(process.argv.slice(2), {
   string: [
+    'packageType',
     'appName',
     'packageName',
     'buildType',
@@ -24,6 +25,7 @@ const args = minimist(process.argv.slice(2), {
     'privkey',
   ],
   alias: {
+    t: 'packageType',
     a: 'appName',
     p: 'packageName',
     b: 'buildType',
@@ -38,6 +40,7 @@ const args = minimist(process.argv.slice(2), {
 });
 
 let {
+  packageType,
   appName,
   packageName,
   buildType,
@@ -49,6 +52,9 @@ let {
   cert: certPath,
   privkey: privkeyPath,
 } = args;
+if (!packageType) {
+  packageType = 'mpk';
+}
 if (!buildType) {
   buildType = 'debug';
 }
@@ -90,11 +96,15 @@ const _readDirectory = p => new Promise((accept, reject) => {
 });
 
 let valid = true;
-if (!appName) {
+if (!['windows', 'macos', 'linux', 'android', 'mpk'].includes(packageType)) {
+  console.warn('invalid packageType');
+  valid = false;
+}
+if (packageType === 'mpk' && !appName) {
   console.warn('missing appName');
   valid = false;
 }
-if (!packageName) {
+if (packageType === 'mpk' && !packageName) {
   console.warn('missing packageName');
   valid = false;
 }
@@ -113,12 +123,17 @@ if (!outputPath) {
   console.warn('invalid outputPath');
   valid = false;
 }
-if (!privkeyPath) {
+if (packageType === 'mpk' && !certPath) {
+  console.warn('invalid certPath');
+  valid = false;
+}
+if (packageType === 'mpk' && !privkeyPath) {
   console.warn('invalid privkeyPath');
   valid = false;
 }
 if (valid) {
   (async () => {
+    // build form request
     const form = new FormData();
 
     form.append('appname', appName);
@@ -134,25 +149,28 @@ if (valid) {
       });
     }
 
-    if (modelPath) {
-      const modelBuffer = await _readFile(modelPath);
-      form.append('model.zip', modelBuffer, {
-        filename: 'model.zip',
-      });
+    if (packageType === 'mpk') {
+      if (modelPath) {
+        const modelBuffer = await _readFile(modelPath);
+        form.append('model.zip', modelBuffer, {
+          filename: 'model.zip',
+        });
+      }
+      if (portalPath) {
+        const portalBuffer = await _readFile(portalPath);
+        form.append('portal.zip', portalBuffer, {
+          filename: 'portal.zip',
+        });
+      }
+
+      const certBuffer = await _readFile(certPath);
+      form.append('app.cert', certBuffer);
+
+      const privkeyBuffer = await _readFile(privkeyPath);
+      form.append('app.privkey', privkeyBuffer);
     }
-    if (portalPath) {
-      const portalBuffer = await _readFile(portalPath);
-      form.append('portal.zip', portalBuffer, {
-        filename: 'portal.zip',
-      });
-    }
 
-    const certBuffer = await _readFile(certPath);
-    form.append('app.cert', certBuffer);
-
-    const privkeyBuffer = await _readFile(privkeyPath);
-    form.append('app.privkey', privkeyBuffer);
-
+    // submit
     const u = await new Promise((accept, reject) => {
       form.submit(EXOPORT_URL, (err, res) => {
         if (!err) {
@@ -174,6 +192,7 @@ if (valid) {
       });
     });
 
+    // download
     await new Promise((accept, reject) => {
       const req = (/^https:/.test(EXOPORT_HOSTNAME) ? https : http).get(`${EXOPORT_HOSTNAME}${u}`, res => {
         const ws = fs.createWriteStream(outputPath);
@@ -191,5 +210,5 @@ if (valid) {
       console.warn(err.stack);
     });
 } else {
-  console.warn('usage: exoport [-a appName] [-p packageName] [-b buildType] <-u contentUrl|-f contentDir> [-o output] [-m model] [-r portal] [-c cert] [-k privkey]');
+  console.warn('usage: exoport <-t packageType> <-a appName> <-p packageName> <-b buildType> <-u contentUrl|-f contentDir> [-o output] <-m model> <-r portal> [-c cert] [-k privkey]');
 }
