@@ -8,7 +8,7 @@ const FormData = require('form-data');
 const archiver = require('archiver');
 
 const EXOPORT_HOSTNAME = `https://exoport.webmr.io`;
-const EXOPORT_URL = `${EXOPORT_HOSTNAME}/mpk`;
+const EXOPORT_UPLOAD_URL = `${EXOPORT_HOSTNAME}/upload`;
 
 const args = minimist(process.argv.slice(2), {
   string: [
@@ -172,7 +172,7 @@ if (valid) {
 
     // submit
     const u = await new Promise((accept, reject) => {
-      form.submit(EXOPORT_URL, (err, res) => {
+      form.submit(EXOPORT_UPLOAD_URL, (err, res) => {
         if (!err) {
           const bs = [];
           res.on('data', d => {
