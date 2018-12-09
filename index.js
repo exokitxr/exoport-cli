@@ -26,7 +26,7 @@ const args = minimist(process.argv.slice(2), {
   alias: {
     a: 'appName',
     p: 'packageName',
-    t: 'buildType',
+    b: 'buildType',
     f: 'contentDir',
     u: 'contentUrl',
     o: 'output',
@@ -191,5 +191,5 @@ if (valid) {
       console.warn(err.stack);
     });
 } else {
-  console.warn('usage: exoport [-a appName] [-p packageName] <-u contentUrl|-f contentDir> [-o output] [-m model] [-r portal] [-c cert] [-k privkey]');
+  console.warn('usage: exoport [-a appName] [-p packageName] [-b buildType] <-u contentUrl|-f contentDir> [-o output] [-m model] [-r portal] [-c cert] [-k privkey]');
 }
